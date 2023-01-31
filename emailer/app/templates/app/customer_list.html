@@ -1,0 +1,41 @@
+{% extends 'app/base.html' %}
+{% block content %}
+<div class="container" style="width: 60%;">
+  <legend class="border-bottom mb-4;">{{ title }}</legend>
+    <p class="text-muted">(total of {{ customer_list|length }})</p>
+  {% if customer_list %}
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <th scope="col">#</th>
+            <th scope="col">ID</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Joined on</th>
+            <th scope="col">Topics</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in customer_list %}    
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ item.pk }}</td>
+                <td>{{ item.first_name }}</td>
+                <td>{{ item.last_name }}</td>
+                <td>{{ item.created_at|date:"d.m.Y H:i:s" }}</td>
+                <td>
+                    {% if item.topics.all %}
+                      <ul>
+                          {% for topic in item.topics.all %}
+                          <li>{{ topic }}</li>
+                          {% endfor %}
+                      </ul>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}        
+        </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock content %}

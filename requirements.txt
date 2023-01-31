@@ -1,0 +1,5 @@
+celery==4.4.7
+Django==1.11.29
+psycopg2-binary==2.8.6
+redis==3.5.3
+django-cors-headers==3.0.2

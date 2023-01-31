@@ -1,0 +1,33 @@
+{% extends 'app/base.html' %}
+{% block content %}
+<div class="container" style="width: 90%;">
+  <legend class="border-bottom mb-4;">{{ title }}</legend>
+    <p class="text-muted">(total of {{ items|length }}, newsletter: {{ newsletter }})</p>
+  {% if items %}
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <th scope="col">#</th>
+            <th scope="col">ID</th>
+            <th scope="col">Newsletter</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Sent on</th>
+            <th scope="col">Opened on</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}    
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ item.pk }}</td>
+                <td>{{ item.newsletter }}</td>
+                <td>{{ item.customer }}</td>
+                <td>{{ item.sent_at|date:"d.m.Y H:i:s" }}</td>
+                <td>{{ item.opened_at|date:"d.m.Y H:i:s" }}</td>
+            </tr>
+        {% endfor %}        
+        </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock content %}
