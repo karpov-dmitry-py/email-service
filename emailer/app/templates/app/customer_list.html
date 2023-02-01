@@ -11,6 +11,7 @@
             <th scope="col">ID</th>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
+            <th scope="col">Email</th>
             <th scope="col">Joined on</th>
             <th scope="col">Topics</th>
         </tr>
@@ -22,6 +23,7 @@
                 <td>{{ item.pk }}</td>
                 <td>{{ item.first_name }}</td>
                 <td>{{ item.last_name }}</td>
+                <td>{{ item.email }}</td>
                 <td>{{ item.created_at|date:"d.m.Y H:i:s" }}</td>
                 <td>
                     {% if item.topics.all %}
@@ -37,5 +39,6 @@
         </tbody>
     </table>
   {% endif %}
+  <a class="btn btn-info" href="{% url 'customer-create' %}">Add customer</a>
 </div>
 {% endblock content %}

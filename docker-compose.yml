@@ -5,12 +5,12 @@ services:
       context: .
     ports:
       - ${APP_EXPOSED_PORT}:8000
-    volumes:
-      - app:/app
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
+             python manage.py create_superuser &&
              python manage.py runserver ${APP_HOST}:${APP_EXPOSED_PORT}"
+    restart: on-failure
     environment:
       - DB_HOST=db
       - DB_PORT=${DB_EXPOSED_PORT}
@@ -22,24 +22,28 @@ services:
       - APP_EXPOSED_PORT=${APP_EXPOSED_PORT}
       - REDIS_EXPOSED_PORT=${REDIS_EXPOSED_PORT}
       - EMAIL_HOST=${EMAIL_HOST}
-      - EMAIL_HOST_USER=${EMAIL_HOST}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - ADMIN_USER_NAME=${ADMIN_USER_NAME}
+      - ADMIN_USER_EMAIL=${ADMIN_USER_EMAIL}
+      - ADMIN_USER_PASSWORD=${ADMIN_USER_PASSWORD}
     depends_on:
       - db
       - redis
-    restart: on-failure
 
   db:
     image: postgres:14-alpine
+    restart: on-failure
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - ${DB_EXPOSED_PORT}:5432
-    restart: on-failure
+    volumes:
+      - pg:/var/lib/postgresql
 
   redis:
     image: redis:6.2-alpine
@@ -65,16 +69,23 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASSWORD}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - APP_PROTOCOL=${APP_PROTOCOL}
+      - APP_HOST=${APP_HOST}
+      - APP_EXPOSED_PORT=${APP_EXPOSED_PORT}
     depends_on:
       - db
       - redis
       - app
 
 volumes:
-  redis:
-    driver: local
-  app:
+  pg:
     driver: local
   celery:
+    driver: local
+  redis:
     driver: local
 

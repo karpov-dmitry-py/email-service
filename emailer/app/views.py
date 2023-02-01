@@ -3,8 +3,11 @@ from __future__ import unicode_literals
 
 import datetime
 
+from django.contrib import messages
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
 from django.http import HttpResponse
@@ -13,6 +16,10 @@ from app.models import Customer
 from app.models import Topic
 from app.models import NewsLetter
 from app.models import Tracking
+
+from app.forms import CustomerForm
+from app.forms import TopicForm
+from app.forms import NewsletterForm
 
 from helpers.logger import log
 
@@ -27,6 +34,37 @@ class CustomerListView(ListView):
         ctx = super(CustomerListView, self).get_context_data(**kwargs)
         ctx['title'] = 'Customers'
         return ctx
+
+
+class CustomerCreateView(CreateView):
+    model = Customer
+    form_class = CustomerForm
+    template_name = 'app/customer_create.html'
+
+    def get_success_url(self):
+        messages.success(self.request, "Customer '{} {}' successfully created".
+                         format(self.object.first_name, self.object.last_name))
+        return reverse_lazy('customer-list')
+
+
+class TopicCreateView(CreateView):
+    model = Topic
+    form_class = TopicForm
+    template_name = 'app/topic_create.html'
+
+    def get_success_url(self):
+        messages.success(self.request, "Topic '{}' successfully created".format(self.object))
+        return reverse_lazy('topic-list')
+
+
+class NewsLetterCreateView(CreateView):
+    model = NewsLetter
+    form_class = NewsletterForm
+    template_name = 'app/newsletter_create.html'
+
+    def get_success_url(self):
+        messages.success(self.request, "NewsLetter '{}' successfully created".format(self.object.title))
+        return reverse_lazy('newsletter-list')
 
 
 # noinspection PyUnresolvedReferences,PyArgumentList
@@ -93,9 +131,10 @@ def handle_open_email(request, tracking_id):
 
 
 def view_email_template(request):
+    from uuid import uuid4
     from service.email_service import EmailService
     ctx = {
-        'tracking_id': 100500,
+        'tracking_id': str(uuid4()),
         'first_name': 'John',
         'last_name': 'Doe',
         'created_at': datetime.datetime.now(),

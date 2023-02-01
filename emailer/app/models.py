@@ -27,7 +27,7 @@ class Customer(models.Model):
     topics = models.ManyToManyField(to=Topic, blank=True, related_name='customers')
 
     def __str__(self):
-        return '{} {} ({}, joined {})'.format(self.first_name, self.last_name, self.email, self.created_at)
+        return '{} {} ({})'.format(self.first_name, self.last_name, self.email)
 
     class Meta:
         db_table = 'customer'
@@ -56,10 +56,12 @@ class NewsLetter(models.Model):
 
 
 class Tracking(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     newsletter = models.ForeignKey(NewsLetter, on_delete=models.CASCADE, related_name='trackings')
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='trackings')
     sent_at = models.DateTimeField(auto_now_add=True)
     opened_at = models.DateTimeField(blank=True, null=True, editable=False)
+    error_on_send = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return '{} {} {}, sent at: {}'.format(self.id, self.newsletter, self.customer.id, self.sent_at)
